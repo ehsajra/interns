@@ -1,0 +1,294 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  INTERN
+  GUIDE
+  ADMIN
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  OFFER
+  REJECTED
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ACTIVE
+  ON_TRACK
+  AT_RISK
+  DELAYED
+  READY_FOR_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum PhaseStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  OPTED_OUT
+  COMPLETED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          UserRole
+  emailVerified Boolean   @default(false)
+  emailVerificationToken String?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  mustResetPassword Boolean @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  internProfile InternProfile?
+  guideProfile  GuideProfile?
+  adminProfile  AdminProfile?
+
+  @@index([email])
+  @@index([role])
+}
+
+model InternProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  firstName   String
+  lastName    String
+  phone       String?
+  bio         String?
+  skills      String[] // Array of skill strings
+  institution String?
+  yearOfStudy String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumes     Resume[]
+  applications Application[]
+  assignments Assignment[]
+  optOuts     OptOut[]
+  certificates Certificate[]
+
+  @@index([userId])
+}
+
+model GuideProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  firstName   String
+  lastName    String
+  phone       String?
+  bio         String?
+  expertise   String[] // Array of expertise areas
+  organization String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects    Project[]
+
+  @@index([userId])
+}
+
+model AdminProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Resume {
+  id          String   @id @default(uuid())
+  internId    String
+  fileName    String
+  fileUrl     String
+  fileSize    Int
+  mimeType    String
+  isPrimary   Boolean  @default(true)
+  uploadedAt  DateTime @default(now())
+
+  intern      InternProfile @relation(fields: [internId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@index([internId])
+}
+
+model Project {
+  id                String        @id @default(uuid())
+  guideId           String
+  title             String
+  shortDescription  String
+  detailedDescription String      @db.Text
+  scope             String        @db.Text
+  useCases          String[]      // Array of use case strings
+  status            ProjectStatus @default(DRAFT)
+  durationWeeks     Int
+  applicationStartDate DateTime?
+  applicationEndDate   DateTime?
+  githubRepoUrl     String?
+  demoLink          String?
+  outcomeSummary    String?       @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  publishedAt       DateTime?
+  readyForReviewAt  DateTime?
+
+  guide             GuideProfile  @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  phases            ProjectPhase[]
+  roles             ProjectRole[]
+  applications      Application[]
+  assignments       Assignment[]
+  optOuts           OptOut[]
+  certificates      Certificate[]
+
+  @@index([guideId])
+  @@index([status])
+  @@index([applicationStartDate, applicationEndDate])
+}
+
+model ProjectPhase {
+  id          String      @id @default(uuid())
+  projectId   String
+  title       String
+  description String      @db.Text
+  order       Int
+  status      PhaseStatus @default(NOT_STARTED)
+  comments    String?     @db.Text
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, order])
+}
+
+model ProjectRole {
+  id          String   @id @default(uuid())
+  projectId   String
+  title       String
+  description String   @db.Text
+  requiredSkills String[] // Array of skill strings
+  maxInterns  Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  applications Application[]
+  assignments Assignment[]
+
+  @@index([projectId])
+}
+
+model Application {
+  id          String            @id @default(uuid())
+  internId    String
+  projectId   String
+  roleId      String
+  resumeId    String?
+  status      ApplicationStatus @default(APPLIED)
+  fitmentScore Float?           // 0-100 score based on skills match
+  appliedAt   DateTime          @default(now())
+  shortlistedAt DateTime?
+  offerSentAt DateTime?
+  rejectedAt  DateTime?
+
+  intern      InternProfile     @relation(fields: [internId], references: [id], onDelete: Cascade)
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role        ProjectRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  resume      Resume?           @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+
+  @@unique([internId, projectId, roleId])
+  @@index([internId])
+  @@index([projectId, roleId])
+  @@index([status])
+}
+
+model Assignment {
+  id          String            @id @default(uuid())
+  internId    String
+  projectId   String
+  roleId      String
+  status      AssignmentStatus  @default(ACTIVE)
+  assignedAt  DateTime          @default(now())
+  optedOutAt  DateTime?
+  completedAt DateTime?
+
+  intern      InternProfile     @relation(fields: [internId], references: [id], onDelete: Cascade)
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role        ProjectRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([internId, projectId])
+  @@index([internId, status])
+  @@index([projectId])
+}
+
+model OptOut {
+  id              String   @id @default(uuid())
+  internId        String
+  projectId       String
+  reason          String?  @db.Text
+  optedOutAt      DateTime @default(now())
+  nextEligibleDate DateTime
+
+  intern          InternProfile @relation(fields: [internId], references: [id], onDelete: Cascade)
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([internId])
+  @@index([nextEligibleDate])
+}
+
+model Certificate {
+  id          String   @id @default(uuid())
+  internId    String
+  projectId   String
+  certificateUrl String
+  issuedAt    DateTime @default(now())
+  issuedBy    String   // Admin user ID
+
+  intern      InternProfile @relation(fields: [internId], references: [id], onDelete: Cascade)
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([internId])
+  @@index([projectId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
