@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { UserRole } from '@prisma/client';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 if (!JWT_SECRET) {
@@ -14,9 +14,7 @@ export interface TokenPayload {
 }
 
 export const generateToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
+  return jwt.sign(payload as any, JWT_SECRET, { expiresIn: '7d' });
 };
 
 export const verifyToken = (token: string): TokenPayload => {

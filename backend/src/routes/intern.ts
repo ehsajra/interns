@@ -34,7 +34,7 @@ internRoutes.patch(
     body('institution').optional().trim(),
     body('yearOfStudy').optional().trim(),
   ],
-  async (req: AuthRequest, res, next) => {
+  async (req: AuthRequest, res: any, next: any) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

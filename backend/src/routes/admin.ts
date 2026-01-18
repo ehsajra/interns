@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import { UserRole } from '@prisma/client';
@@ -20,7 +20,7 @@ adminRoutes.post(
     body('firstName').trim().notEmpty(),
     body('lastName').trim().notEmpty(),
   ],
-  async (req: AuthRequest, res, next) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -37,7 +37,7 @@ adminRoutes.post(
 );
 
 // Get all guides
-adminRoutes.get('/guides', async (req: AuthRequest, res, next) => {
+adminRoutes.get('/guides', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const guides = await adminService.getGuides();
     res.json(guides);
@@ -50,7 +50,7 @@ adminRoutes.get('/guides', async (req: AuthRequest, res, next) => {
 adminRoutes.patch(
   '/guides/:id/status',
   [body('isActive').isBoolean()],
-  async (req: AuthRequest, res, next) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -67,7 +67,7 @@ adminRoutes.patch(
 );
 
 // Get all projects (overview)
-adminRoutes.get('/projects', async (req: AuthRequest, res, next) => {
+adminRoutes.get('/projects', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const projects = await adminService.getProjects();
     res.json(projects);

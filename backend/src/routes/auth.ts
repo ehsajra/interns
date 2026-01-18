@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { UserService } from '../services/userService';
 import { AppError } from '../middleware/errorHandler';
@@ -16,7 +16,7 @@ authRoutes.post(
     body('firstName').trim().notEmpty(),
     body('lastName').trim().notEmpty(),
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -54,7 +54,7 @@ authRoutes.post(
     body('firstName').trim().notEmpty(),
     body('lastName').trim().notEmpty(),
   ],
-  async (req: any, res, next) => {
+  async (req: any, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -74,7 +74,7 @@ authRoutes.post(
 );
 
 // Verify email
-authRoutes.post('/verify-email', async (req, res, next) => {
+authRoutes.post('/verify-email', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = req.body;
     if (!token) {
@@ -95,7 +95,7 @@ authRoutes.post(
     body('email').isEmail().normalizeEmail(),
     body('password').notEmpty(),
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -144,7 +144,7 @@ authRoutes.get('/me', authenticate, async (req: any, res, next) => {
 authRoutes.post(
   '/forgot-password',
   [body('email').isEmail().normalizeEmail()],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -167,7 +167,7 @@ authRoutes.post(
     body('token').notEmpty(),
     body('password').isLength({ min: 8 }),
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
