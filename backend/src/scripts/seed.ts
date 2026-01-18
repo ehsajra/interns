@@ -8,11 +8,32 @@ async function main() {
 
   // Create admin user
   console.log('Creating admin user...');
-  const adminSupabaseUser = await createSupabaseUser(
-    'admin@internshub.com',
-    'admin123',
-    { role: 'ADMIN', firstName: 'Admin', lastName: 'User' }
-  );
+  let adminSupabaseUser;
+  try {
+    adminSupabaseUser = await createSupabaseUser(
+      'admin@internshub.com',
+      'admin123',
+      { role: 'ADMIN', firstName: 'Admin', lastName: 'User' }
+    );
+  } catch (error: any) {
+    if (error.message.includes('already been registered')) {
+      console.log('Admin user already exists in Supabase Auth, skipping creation...');
+      // Get existing user ID from Supabase
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseAdmin = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      );
+      const { data } = await supabaseAdmin.auth.admin.listUsers();
+      adminSupabaseUser = data.users.find(u => u.email === 'admin@internshub.com');
+      if (!adminSupabaseUser) {
+        throw new Error('Could not find existing admin user in Supabase');
+      }
+    } else {
+      throw error;
+    }
+  }
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@internshub.com' },
@@ -39,11 +60,32 @@ async function main() {
 
   // Create sample guide
   console.log('Creating guide user...');
-  const guideSupabaseUser = await createSupabaseUser(
-    'guide@internshub.com',
-    'guide123',
-    { role: 'GUIDE', firstName: 'John', lastName: 'Guide' }
-  );
+  let guideSupabaseUser;
+  try {
+    guideSupabaseUser = await createSupabaseUser(
+      'guide@internshub.com',
+      'guide123',
+      { role: 'GUIDE', firstName: 'John', lastName: 'Guide' }
+    );
+  } catch (error: any) {
+    if (error.message.includes('already been registered')) {
+      console.log('Guide user already exists in Supabase Auth, skipping creation...');
+      // Get existing user ID from Supabase
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseAdmin = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      );
+      const { data } = await supabaseAdmin.auth.admin.listUsers();
+      guideSupabaseUser = data.users.find(u => u.email === 'guide@internshub.com');
+      if (!guideSupabaseUser) {
+        throw new Error('Could not find existing guide user in Supabase');
+      }
+    } else {
+      throw error;
+    }
+  }
 
   const guide = await prisma.user.upsert({
     where: { email: 'guide@internshub.com' },
@@ -73,11 +115,32 @@ async function main() {
 
   // Create sample intern
   console.log('Creating intern user...');
-  const internSupabaseUser = await createSupabaseUser(
-    'intern@internshub.com',
-    'intern123',
-    { role: 'INTERN', firstName: 'Jane', lastName: 'Intern' }
-  );
+  let internSupabaseUser;
+  try {
+    internSupabaseUser = await createSupabaseUser(
+      'intern@internshub.com',
+      'intern123',
+      { role: 'INTERN', firstName: 'Jane', lastName: 'Intern' }
+    );
+  } catch (error: any) {
+    if (error.message.includes('already been registered')) {
+      console.log('Intern user already exists in Supabase Auth, skipping creation...');
+      // Get existing user ID from Supabase
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseAdmin = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      );
+      const { data } = await supabaseAdmin.auth.admin.listUsers();
+      internSupabaseUser = data.users.find(u => u.email === 'intern@internshub.com');
+      if (!internSupabaseUser) {
+        throw new Error('Could not find existing intern user in Supabase');
+      }
+    } else {
+      throw error;
+    }
+  }
 
   const intern = await prisma.user.upsert({
     where: { email: 'intern@internshub.com' },
