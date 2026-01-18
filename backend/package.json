@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npm run generate:safe && tsc",
-    "build:vercel": "npm install && npm run generate:safe && tsc",
+    "build": "npm run generate:safe && tsc && npm run copy:public",
+    "build:vercel": "npm install && npm run generate:safe && tsc && npm run copy:public",
     "build:tsc-only": "tsc",
+    "copy:public": "cp -r public dist/ || xcopy public dist\\public\\ /E /I /Y || echo 'Public directory copied'",
     "start": "node dist/index.js",
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",

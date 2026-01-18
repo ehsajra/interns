@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interns Project Hub API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .endpoint { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #28a745;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Interns Project Hub API</h1>
+        <p><span class="status">ONLINE</span> Backend API is running successfully!</p>
+        
+        <h2>Available Endpoints:</h2>
+        <div class="endpoint">GET /api/health - Health check</div>
+        <div class="endpoint">POST /api/auth/register - User registration</div>
+        <div class="endpoint">POST /api/auth/login - User login</div>
+        <div class="endpoint">GET /api/auth/me - Get current user</div>
+        <div class="endpoint">GET /api/intern/* - Intern routes</div>
+        <div class="endpoint">GET /api/guide/* - Guide routes</div>
+        <div class="endpoint">GET /api/admin/* - Admin routes</div>
+        
+        <h2>Frontend Application:</h2>
+        <p>The frontend should be deployed separately and configured to use this API endpoint.</p>
+        
+        <h2>Documentation:</h2>
+        <p>For detailed API documentation, please refer to the project repository.</p>
+    </div>
+</body>
+</html>
