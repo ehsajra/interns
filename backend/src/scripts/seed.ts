@@ -1,5 +1,5 @@
 import { PrismaClient, UserRole } from '@prisma/client';
-import { hashPassword } from '../utils/password';
+import { createSupabaseUser } from '../lib/supabase-auth';
 
 const prisma = new PrismaClient();
 
@@ -7,13 +7,20 @@ async function main() {
   console.log('Seeding database...');
 
   // Create admin user
-  const adminPassword = await hashPassword('admin123');
+  console.log('Creating admin user...');
+  const adminSupabaseUser = await createSupabaseUser(
+    'admin@internshub.com',
+    'admin123',
+    { role: 'ADMIN', firstName: 'Admin', lastName: 'User' }
+  );
+
   const admin = await prisma.user.upsert({
     where: { email: 'admin@internshub.com' },
     update: {},
     create: {
+      id: adminSupabaseUser.id, // Use Supabase user ID
       email: 'admin@internshub.com',
-      passwordHash: adminPassword,
+      passwordHash: '', // Not needed with Supabase Auth
       role: UserRole.ADMIN,
       emailVerified: true,
       adminProfile: {
@@ -31,13 +38,20 @@ async function main() {
   console.log('Created admin:', admin.email);
 
   // Create sample guide
-  const guidePassword = await hashPassword('guide123');
+  console.log('Creating guide user...');
+  const guideSupabaseUser = await createSupabaseUser(
+    'guide@internshub.com',
+    'guide123',
+    { role: 'GUIDE', firstName: 'John', lastName: 'Guide' }
+  );
+
   const guide = await prisma.user.upsert({
     where: { email: 'guide@internshub.com' },
     update: {},
     create: {
+      id: guideSupabaseUser.id, // Use Supabase user ID
       email: 'guide@internshub.com',
-      passwordHash: guidePassword,
+      passwordHash: '', // Not needed with Supabase Auth
       role: UserRole.GUIDE,
       emailVerified: true,
       guideProfile: {
@@ -58,13 +72,20 @@ async function main() {
   console.log('Created guide:', guide.email);
 
   // Create sample intern
-  const internPassword = await hashPassword('intern123');
+  console.log('Creating intern user...');
+  const internSupabaseUser = await createSupabaseUser(
+    'intern@internshub.com',
+    'intern123',
+    { role: 'INTERN', firstName: 'Jane', lastName: 'Intern' }
+  );
+
   const intern = await prisma.user.upsert({
     where: { email: 'intern@internshub.com' },
     update: {},
     create: {
+      id: internSupabaseUser.id, // Use Supabase user ID
       email: 'intern@internshub.com',
-      passwordHash: internPassword,
+      passwordHash: '', // Not needed with Supabase Auth
       role: UserRole.INTERN,
       emailVerified: true,
       internProfile: {
