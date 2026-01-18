@@ -22,10 +22,13 @@ export async function createSupabaseUser(
   password: string,
   metadata?: Record<string, any>
 ) {
+  // Check if email confirmation is disabled (useful for testing)
+  const disableEmailConfirmation = process.env.DISABLE_EMAIL_CONFIRMATION === 'true';
+  
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
-    email_confirm: true, // Auto-confirm for now
+    email_confirm: disableEmailConfirmation ? true : false, // Auto-confirm if disabled for testing
     user_metadata: metadata || {},
   });
 

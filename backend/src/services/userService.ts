@@ -88,7 +88,10 @@ export class UserService {
       throw new AppError('User profile not found', 404);
     }
 
-    if (!user.emailVerified && !data.user.email_confirmed_at) {
+    // Check if email confirmation is disabled (for testing)
+    const disableEmailConfirmation = process.env.DISABLE_EMAIL_CONFIRMATION === 'true';
+    
+    if (!disableEmailConfirmation && !user.emailVerified && !data.user.email_confirmed_at) {
       throw new AppError('Please verify your email before logging in', 401);
     }
 

@@ -82,6 +82,17 @@ This starts both backend (port 3001) and frontend (port 3000).
 - **Phase 3**: Execution & Completion
 - **Phase 4**: Polish & Scale
 
+## Testing Configuration
+
+For easier unit testing and development, you can disable email confirmation:
+
+```env
+# backend/.env
+DISABLE_EMAIL_CONFIRMATION=true
+```
+
+See `TESTING_CONFIG.md` for details.
+
 ## License
 
 MIT

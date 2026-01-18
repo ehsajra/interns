@@ -81,7 +81,9 @@ export default function RegisterPage() {
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md text-center">
           <h2 className="text-2xl font-bold">Registration Successful!</h2>
           <p className="text-gray-600">
-            Please check your email to verify your account before logging in.
+            {process.env.NEXT_PUBLIC_DISABLE_EMAIL_CONFIRMATION === 'true'
+              ? 'You can now login to your account.'
+              : 'Please check your email to verify your account before logging in.'}
           </p>
           <Link
             href="/login"

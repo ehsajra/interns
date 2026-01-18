@@ -26,8 +26,14 @@ authRoutes.post(
       const { email, password, firstName, lastName } = req.body;
       const user = await userService.createIntern(email, password, firstName, lastName);
 
+      // Check if email confirmation is disabled
+      const disableEmailConfirmation = process.env.DISABLE_EMAIL_CONFIRMATION === 'true';
+      const message = disableEmailConfirmation
+        ? 'Registration successful. You can now login.'
+        : 'Registration successful. Please check your email to verify your account.';
+
       res.status(201).json({
-        message: 'Registration successful. Please check your email to verify your account.',
+        message,
         user: {
           id: user.id,
           email: user.email,

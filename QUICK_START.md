@@ -64,7 +64,7 @@ cd backend
 npm install
 cd ..
 
-# Frontend dependencies
+# Frontend dependenciecd ..s
 cd frontend
 npm install
 cd ..
@@ -92,6 +92,9 @@ FRONTEND_URL=http://localhost:3000
 
 # Storage (using Supabase Storage)
 USE_SUPABASE_STORAGE=true
+
+# Testing Configuration (optional - disable email confirmation for easier testing)
+DISABLE_EMAIL_CONFIRMATION=true
 ```
 
 **Important**: Replace all placeholder values with your actual Supabase credentials!
