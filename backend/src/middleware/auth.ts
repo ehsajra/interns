@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../types/prisma';
 import { verifyToken } from '../lib/supabase-auth';
 import { PrismaClient } from '@prisma/client';
 
@@ -45,7 +45,7 @@ export const authenticate = async (
     }
 
     req.userId = user.id;
-    req.userRole = user.role;
+    req.userRole = user.role as UserRole;
     next();
   } catch (error: any) {
     if (error.message?.includes('Invalid token') || error.message?.includes('JWT')) {

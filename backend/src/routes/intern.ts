@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../types/prisma';
 import { InternService } from '../services/internService';
 import { AppError } from '../middleware/errorHandler';
 

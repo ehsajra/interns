@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../types/prisma';
 import { uploadFile, getPublicUrl } from '../lib/supabase-storage';
 import { AppError } from '../middleware/errorHandler';
 import { PrismaClient } from '@prisma/client';

@@ -1,4 +1,5 @@
-import { PrismaClient, ProjectStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { ProjectStatus } from '../types/prisma';
 import { AppError } from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();

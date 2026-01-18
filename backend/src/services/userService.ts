@@ -1,4 +1,5 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { UserRole } from '../types/prisma';
 import { createSupabaseUser, getUserById, updateUser, verifyToken } from '../lib/supabase-auth';
 import { AppError } from '../middleware/errorHandler';
 import { supabaseAdmin } from '../lib/supabase';
