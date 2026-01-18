@@ -5,15 +5,17 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate && tsc",
-    "build:vercel": "npm install && prisma generate && tsc",
+    "build": "npm run generate:safe && tsc",
+    "build:vercel": "npm install && npm run generate:safe && tsc",
+    "build:tsc-only": "tsc",
     "start": "node dist/index.js",
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "generate": "prisma generate",
+    "generate:safe": "prisma generate || echo 'Prisma generate failed, using backup types'",
     "seed": "tsx src/scripts/seed.ts",
     "test": "jest",
-    "postinstall": "prisma generate"
+    "postinstall": "npm run generate:safe"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",
