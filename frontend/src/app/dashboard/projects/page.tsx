@@ -1,17 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUser } from '@/lib/auth';
+import { getUser, type User } from '@/lib/auth';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 
 export default function ProjectsPage() {
-  const user = getUser();
+  const [user, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to get user:', error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (userLoading || !user) {
+      setLoading(false);
+      return;
+    }
 
     const fetchProjects = async () => {
       try {
@@ -33,7 +52,11 @@ export default function ProjectsPage() {
     };
 
     fetchProjects();
-  }, [user]);
+  }, [user, userLoading]);
+
+  if (userLoading) {
+    return <div className="text-center py-12">Loading...</div>;
+  }
 
   if (!user || (user.role !== 'GUIDE' && user.role !== 'ADMIN')) {
     return <div className="px-4 py-6">Access denied</div>;

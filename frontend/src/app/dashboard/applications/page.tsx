@@ -1,16 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUser } from '@/lib/auth';
+import { getUser, type User } from '@/lib/auth';
 import { api } from '@/lib/api';
 
 export default function ApplicationsPage() {
-  const user = getUser();
+  const [user, setUser] = useState<User | null>(null);
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
-    if (!user || user.role !== 'INTERN') return;
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to get user:', error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (userLoading || !user || user.role !== 'INTERN') {
+      setLoading(false);
+      return;
+    }
 
     const fetchApplications = async () => {
       try {
@@ -24,7 +43,11 @@ export default function ApplicationsPage() {
     };
 
     fetchApplications();
-  }, [user]);
+  }, [user, userLoading]);
+
+  if (userLoading) {
+    return <div className="text-center py-12">Loading...</div>;
+  }
 
   if (!user || user.role !== 'INTERN') {
     return <div className="px-4 py-6">Access denied</div>;

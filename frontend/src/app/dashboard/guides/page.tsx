@@ -1,16 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUser } from '@/lib/auth';
+import { getUser, type User } from '@/lib/auth';
 import { api } from '@/lib/api';
 
 export default function GuidesPage() {
-  const user = getUser();
+  const [user, setUser] = useState<User | null>(null);
   const [guides, setGuides] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
-    if (!user || user.role !== 'ADMIN') return;
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to get user:', error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (userLoading || !user || user.role !== 'ADMIN') {
+      setLoading(false);
+      return;
+    }
 
     const fetchGuides = async () => {
       try {
@@ -24,7 +43,11 @@ export default function GuidesPage() {
     };
 
     fetchGuides();
-  }, [user]);
+  }, [user, userLoading]);
+
+  if (userLoading) {
+    return <div className="text-center py-12">Loading...</div>;
+  }
 
   if (!user || user.role !== 'ADMIN') {
     return <div className="px-4 py-6">Access denied</div>;
