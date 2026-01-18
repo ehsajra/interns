@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getToken } from '@/lib/auth';
+import { getAccessToken } from '@/lib/auth';
 
 export default function HomePage() {
   const token = getToken();
