@@ -32,7 +32,7 @@ npm --version
 
 1. In your Supabase project dashboard, go to **Settings** → **API**
 2. Copy these values:
-   - **Project URL**: `https://xxxxx.supabase.co`
+   - **Project URL**: `https://qfmsrhwrctjzhtsnuval.supabase.co`
    - **anon/public key**: (for frontend)
    - **service_role key**: (for backend - keep secret!)
 
